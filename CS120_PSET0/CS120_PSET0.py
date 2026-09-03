@@ -1,4 +1,4 @@
-"""CS 120 PSET 0 -- Question 1, parts (a) and (c)."""
+"""CS 120 PSET 0: Question 1(a) and (c)."""
 
 
 class Vertex:
