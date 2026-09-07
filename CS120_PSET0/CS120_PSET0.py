@@ -27,13 +27,6 @@ class BTvertex:
         self.size: int = None
 
 
-# Helper: returns the child of u whose subtree is larger, counting a missing child as size 0. By the lemma from 1b this child exists whenever u.size >= 2
-def larger_child(u):
-    left_size = 0 if u.left is None else u.left.size
-    right_size = 0 if u.right is None else u.right.size
-    return u.left if left_size >= right_size else u.right
-
-
 #
 # Problem 1a
 #
@@ -76,6 +69,13 @@ def calculate_sizes(v):
 # Why O(h): only case (iii) repeats, and it moves from a vertex to one of its children, so each iteration descends one level. 
 # There are at most h levels below v, and each iteration does O(1) comparisons on sizes already stored by
 # 1a. Space is O(1), since the loop needs no recursion or stack.
+
+# Helper: returns the child of u whose subtree is larger, counting a missing child as size 0. By the lemma from 1b this child exists whenever u.size >= 2
+def larger_child(u):
+    left_size = 0 if u.left is None else u.left.size
+    right_size = 0 if u.right is None else u.right.size
+    return u.left if left_size >= right_size else u.right
+    
 def FindDescendantOfSize(t, v):
     # Loop invariant: v.size >= 2t+1, so by the lemma the larger child w of v
     # exists and has w.size >= t. The three cases are those of the proof:
