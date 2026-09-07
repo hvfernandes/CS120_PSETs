@@ -42,12 +42,12 @@ class BTvertex:
 # Why O(n): the recursion runs once per vertex, since a vertex is only reached through the single edge from its parent, and each call does O(1) work on top of its recursive calls
 
 def calculate_sizes(v):
-    # Base case: an empty subtree has size 0 and nothing to store
+    # base case: an empty subtree has size 0 and nothing to store
     if v is None:
         return 0
 
-    # Recursive case: children first, then combine in O(1)
-    # A missing child contributes 0, so vertices with 1 or 0 children need no special handling
+    # recursive case: children first, then combine in O(1)
+    # a missing child contributes 0, so vertices with 1 or 0 children need no special handling
     left_size = calculate_sizes(v.left)
     right_size = calculate_sizes(v.right)
     v.size = 1 + left_size + right_size
@@ -65,27 +65,30 @@ def calculate_sizes(v):
 # Runtime: O(h) 
 
 # First intuition: the proof from 1b run forwards. Every case of it either stops or moves to the larger child
-# Scanning the whole subtree would be O(n). But by the lemma, since a vertex of size s has a larger child of size >= (s-1)/2, then from size >= 2t+1 the larger child has size >= t and I can never undershoot the window
-# Why O(h): only case (iii) repeats, and it moves from a vertex to one of its children, so each iteration descends one level. 
+# Scanning the whole subtree would be O(n). But since a vertex of size s has a larger child of size >= (s-1)/2, then from size >= 2t+1 the larger child has size >= t and I can never undershoot the window
+# Why O(h): algorithm moves only downward, so it performs at most h iterations, where h is the height of the subtree rooted at the original v
 # There are at most h levels below v, and each iteration does O(1) comparisons on sizes already stored by
-# 1a. Space is O(1), since the loop needs no recursion or stack.
 
-# Helper: returns the child of u whose subtree is larger, counting a missing child as size 0. By the lemma from 1b this child exists whenever u.size >= 2
-def larger_child(u):
-    left_size = 0 if u.left is None else u.left.size
-    right_size = 0 if u.right is None else u.right.size
-    return u.left if left_size >= right_size else u.right
-    
 def FindDescendantOfSize(t, v):
-    # Loop invariant: v.size >= 2t+1, so by the lemma the larger child w of v
-    # exists and has w.size >= t. The three cases are those of the proof:
-    while True:
-        w = larger_child(v)
+    # follow the larger child while the current subtree is too large
+    while v.size >= 2 * t + 1:
+        left_size = 0 if v.left is None else v.left.size
+        right_size = 0 if v.right is None else v.right.size
 
-        if w.size <= 2 * t - 1:          # (i) w is good
-            return w
+        if left_size >= right_size:
+            v = v.left
+        else:
+            v = v.right
 
-        if w.size == 2 * t:              # (ii) by the corollary, w's larger, child is good
-            return larger_child(w)       
+    # now, t <= v.size <= 2t
+    # if v.size is 2t, its larger child has size between t and 2t-1
+    if v.size == 2 * t:
+        left_size = 0 if v.left is None else v.left.size
+        right_size = 0 if v.right is None else v.right.size
 
-        v = w                            # (iii) w.size >= 2t+1, so descend
+        if left_size >= right_size:
+            v = v.left
+        else:
+            v = v.right
+
+    return v
